@@ -8,19 +8,23 @@ namespace EXESpy
         {
             if(header.VirtualSize > header.SizeOfRawData)
             {
-                throw new Exception("PESectionHeader.VirtualSize may not be greater than PESectionHeader.SizeOfRawData.");
+                throw new Exception(".text segment must have a VirtualSize less than or equal to its SizeOfRawData.");
             }
 
-            BC.Log($"{header.Name} Section (Disassembly):");
+            Print.Log($"{header.Name} Section (Disassembly):");
             while (stream.offset < stream.buffer.Length)
             {
                 string inst = ParseInstruction(stream);
                 if (inst.Length > 0)
                 {
-                    BC.LogIn(inst);
+                    Print.LogIn(inst);
                 }
             }
-            BC.NL();
+            int paddingSize = (int)(header.SizeOfRawData - header.VirtualSize);
+            byte[] padding = new byte[paddingSize];
+            Array.Copy(stream.buffer, header.VirtualSize, padding, 0, padding.Length);
+            Print.Log(Read.AsHex(padding));
+            Print.NL();
         }
         public static string ParseInstruction(TinyStream stream)
         {
@@ -34,7 +38,7 @@ namespace EXESpy
                     return "RET";
                 default:
                     return "";
-                    return $"Unknown instruction {DF.AsHex(new byte[1] { instructionByte })}!";
+                    return $"Unknown instruction {Read.AsHex(new byte[1] { instructionByte })}!";
             }
         }
         public static string ParseImm32(TinyStream stream)

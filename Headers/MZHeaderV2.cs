@@ -28,31 +28,31 @@ namespace EXESpy
         public uint PEHeaderStart;
         public void Print()
         {
-            BC.Log("MZHeader:");
-            BC.LogPair("MagicBytes", DF.AsASCII(MagicBytes));
-            BC.LogPair("ExtraBytes", DF.AsHex(ExtraBytes));
-            BC.LogPair("Pages", DF.AsUInt(Pages));
-            BC.LogPair("RelocationItems", DF.AsUInt(RelocationItems));
-            BC.LogPair("HeaderSize", DF.AsUInt(HeaderSize));
-            BC.LogPair("MinimumAllocation", DF.AsUInt(MinimumAllocation));
-            BC.LogPair("MaximumAllocation", DF.AsUInt(MaximumAllocation));
-            BC.LogPair("InitialSS", DF.AsUInt(InitialSS));
-            BC.LogPair("InitialSP", DF.AsUInt(InitialSP));
-            BC.LogPair("Checksum", DF.AsUInt(Checksum));
-            BC.LogPair("InitialIP", DF.AsUInt(InitialIP));
-            BC.LogPair("InitialCS", DF.AsUInt(InitialCS));
-            BC.LogPair("RelocationTable", DF.AsUInt(RelocationTable));
-            BC.LogPair("Overlay", DF.AsUInt(Overlay));
-            BC.LogPair("Reserved1", DF.AsHex(Reserved1));
-            BC.LogPair("OEMIdentifier", DF.AsUInt(OEMIdentifier));
-            BC.LogPair("OEMInfo", DF.AsUInt(OEMInfo));
-            BC.LogPair("Reserved2", DF.AsHex(Reserved2));
-            BC.LogPair("PEHeaderStart", DF.AsUInt(PEHeaderStart));
-            BC.NL();
+            EXESpy.Print.Log("MZHeader:");
+            EXESpy.Print.LogPair("MagicBytes", Read.AsASCII(MagicBytes));
+            EXESpy.Print.LogPair("ExtraBytes", Read.AsHex(ExtraBytes));
+            EXESpy.Print.LogPair("Pages", Read.AsUInt(Pages));
+            EXESpy.Print.LogPair("RelocationItems", Read.AsUInt(RelocationItems));
+            EXESpy.Print.LogPair("HeaderSize", Read.AsUInt(HeaderSize));
+            EXESpy.Print.LogPair("MinimumAllocation", Read.AsUInt(MinimumAllocation));
+            EXESpy.Print.LogPair("MaximumAllocation", Read.AsUInt(MaximumAllocation));
+            EXESpy.Print.LogPair("InitialSS", Read.AsUInt(InitialSS));
+            EXESpy.Print.LogPair("InitialSP", Read.AsUInt(InitialSP));
+            EXESpy.Print.LogPair("Checksum", Read.AsUInt(Checksum));
+            EXESpy.Print.LogPair("InitialIP", Read.AsUInt(InitialIP));
+            EXESpy.Print.LogPair("InitialCS", Read.AsUInt(InitialCS));
+            EXESpy.Print.LogPair("RelocationTable", Read.AsUInt(RelocationTable));
+            EXESpy.Print.LogPair("Overlay", Read.AsUInt(Overlay));
+            EXESpy.Print.LogPair("Reserved1", Read.AsHex(Reserved1));
+            EXESpy.Print.LogPair("OEMIdentifier", Read.AsUInt(OEMIdentifier));
+            EXESpy.Print.LogPair("OEMInfo", Read.AsUInt(OEMInfo));
+            EXESpy.Print.LogPair("Reserved2", Read.AsHex(Reserved2));
+            EXESpy.Print.LogPair("PEHeaderStart", Read.AsUInt(PEHeaderStart));
+            EXESpy.Print.NL();
         }
         public static MZHeaderV2 Parse(TinyStream stream)
         {
-            MZHeaderV2 mzHeaderV2 = DF.Parse<MZHeaderV2>(stream);
+            MZHeaderV2 mzHeaderV2 = Read.Parse<MZHeaderV2>(stream);
 
             if (mzHeaderV2.MagicBytes != 0x5A4D)
             {

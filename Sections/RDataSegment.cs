@@ -11,9 +11,9 @@ namespace EXESpy
                 throw new Exception("PESectionHeader.VirtualSize may not be greater than PESectionHeader.SizeOfRawData.");
             }
 
-            BC.Log($"{header.Name} Section (ASCII):");
-            BC.Log(DF.AsASCII(stream.buffer));
-            BC.NL();
+            Print.Log($"{header.Name} Section (ASCII):");
+            Print.Log(Read.AsASCII(stream.buffer));
+            Print.NL();
         }
     }
 }

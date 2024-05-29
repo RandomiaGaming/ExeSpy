@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{63443BEF-01C6-4B9A-A9AC-6AA5C31B9BE7}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>EXESpy</RootNamespace>
-    <AssemblyName>EXESpy</AssemblyName>
+    <RootNamespace>ExeSpy</RootNamespace>
+    <AssemblyName>ExeSpy</AssemblyName>
     <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -33,7 +33,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>EXESpy.Program</StartupObject>
+    <StartupObject>ExeSpy.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -47,21 +47,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="BetterConsole.cs" />
-    <Compile Include="DataFormatter.cs" />
-    <Compile Include="DataSegment.cs" />
-    <Compile Include="RDataSegment.cs" />
-    <Compile Include="TextSegment.cs" />
-    <Compile Include="MZHeader.cs" />
-    <Compile Include="MZHeaderV2.cs" />
-    <Compile Include="PEHeader.cs" />
-    <Compile Include="PEOptionalHeader.cs" />
-    <Compile Include="PESectionHeader.cs" />
+    <Compile Include="Helpers\Construct.cs" />
+    <Compile Include="Helpers\Destruct.cs" />
+    <Compile Include="Helpers\FormatAs.cs" />
+    <Compile Include="Helpers\Print.cs" />
+    <Compile Include="Helpers\Read.cs" />
+    <Compile Include="Helpers\Write.cs" />
+    <Compile Include="Headers\MZHeader.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="TinyStream.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Learning.md" />
     <None Include="LICENSE" />
     <None Include="README.md" />
   </ItemGroup>
@@ -70,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
+    <Folder Include="Sections\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

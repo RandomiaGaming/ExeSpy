@@ -6,14 +6,14 @@
         {
             if (header.VirtualSize > header.SizeOfRawData)
             {
-                BC.Log($"{header.Name} Section (ASCII + {header.VirtualSize - header.SizeOfRawData} Uninitialized Bytes):");
+                Print.Log($"{header.Name} Section (ASCII + {header.VirtualSize - header.SizeOfRawData} Uninitialized Bytes):");
             }
             else
             {
-                BC.Log($"{header.Name} Section (ASCII):");
+                Print.Log($"{header.Name} Section (ASCII):");
             }
-            BC.Log(DF.AsASCII(stream.buffer));
-            BC.NL();
+            Print.Log(Read.AsASCII(stream.buffer));
+            Print.NL();
         }
     }
 }
