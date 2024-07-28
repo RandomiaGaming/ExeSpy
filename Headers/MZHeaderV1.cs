@@ -1,12 +1,12 @@
 ﻿namespace ExeSpy
 {
-    // Copied as is from winnt.h
+    // Modified from winnt.h
     // typedef struct _IMAGE_DOS_HEADER { // DOS .EXE header
     // } IMAGE_DOS_HEADER, *PIMAGE_DOS_HEADER;
     // This version of MZHeader is used by classic MS DOS applications however apps using the WinNE or WinPE formats have an extended version of the MZHeader (MZHeaderV2). A spec compliant MZ loader should read the MZHeaderV1 first then only load the larger MZHeaderV2 if HeaderSize contains enough bytes for the larger structure. 
-    public sealed class MZHeaderV2
+    public sealed class MZHeaderV1
     {
-        // (WORD * 40) + (SQWORD * 1)
+        // WORD * 14
         public const int Size = 28;
 
         // WORD e_magic; // Magic number
@@ -51,22 +51,6 @@
         // WORD e_ovno; // Overlay number
         // Value used for overlay management. If zero, this is the main executable.
         public ushort Overlay = 0;
-        // WORD e_res[4]; // Reserved words
-        // 8 bytes of reserved space
-        public ushort[] Reserved1 = new ushort[4];
-        // WORD e_oemid; // OEM identifier (for e_oeminfo)
-        // Defined by name but no other information is given; typically zeroes
-        public ushort OEMIdentifier = 0;
-        // WORD e_oeminfo; // OEM information; e_oemid specific
-        // Defined by name but no other information is given; typically zeroes
-        public ushort OEMInfo = 0;
-        // WORD e_res2[10]; // Reserved words
-        // 20 bytes of reserved space
-        public ushort[] Reserved2 = new ushort[10];
-        // LONG e_lfanew; // File address of new exe header
-        // Starting address of the PE header
-        // Technically the above comment is wrong because NewHeaderFileAddress points to the second header for the executable which can either be a NEHeader or a PEHeader.
-        public long NewHeaderFileAddress = 0;
     }
 }
 /* Field Names:
@@ -84,9 +68,4 @@ InitialIP
 InitialCS
 RelocationTableFileAddress
 Overlay
-Reserved1
-OEMIdentifier
-OEMInfo
-Reserved2
-NewHeaderFileAddress
 */

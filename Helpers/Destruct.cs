@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Text;
 
 namespace ExeSpy
@@ -47,31 +48,35 @@ namespace ExeSpy
         }
         public static byte[] ASCII(string value)
         {
+            if (value is null) { throw new Exception("Bad value."); }
+
             return Encoding.ASCII.GetBytes(value);
         }
         public static byte[] UTF8(string value)
         {
+            if (value is null) { throw new Exception("Bad value."); }
+
             return Encoding.UTF8.GetBytes(value);
         }
         public static byte[] UTF16(string value)
         {
+            if (value is null) { throw new Exception("Bad value."); }
+
             return Encoding.Unicode.GetBytes(value);
         }
         public static byte[] UTF32(string value)
         {
+            if (value is null) { throw new Exception("Bad value."); }
+
             return Encoding.UTF32.GetBytes(value);
         }
         public static byte[] Epoch32(DateTime value)
         {
-            // 621355968000000000 = Epoch start date in ticks (12:00am 01/01/1970 UTC).
-            // 10000000 = Number of ticks in one second.
-            return DWord((uint)((621355968000000000ul - (ulong)value.Ticks) / 10000000ul));
+            return SDWord((int)((value.Ticks - DateTime.Parse("12:00am 01/01/1970 UTC").Ticks) / 10000000l));
         }
         public static byte[] Epoch64(DateTime value)
         {
-            // 621355968000000000 = Epoch start date in ticks (12:00am 01/01/1970 UTC).
-            // 10000000 = Number of ticks in one second.
-            return QWord((621355968000000000ul - (ulong)value.Ticks) / 10000000ul);
+            return SQWord((value.Ticks - DateTime.Parse("12:00am 01/01/1970 UTC").Ticks) / 10000000l);
         }
     }
 }

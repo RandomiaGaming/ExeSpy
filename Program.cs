@@ -45,9 +45,14 @@ namespace ExeSpy
         {
             FileStream stream = File.Open(exePath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
-            MZHeader mzHeader = MZHeader.ReadMe(stream);
-            mzHeader.PrintMe();
+            MZHeaderV1 mzHeaderV1 = Read.MZHeaderV1(stream);
+            Print.MZHeaderV1(mzHeaderV1);
 
+
+            if(Destruct.MZHeaderV1(mzHeaderV1).Length != MZHeaderV1.Size)
+            {
+
+            }
             /*
              MZHeaderV2 mzHeaderV2 = MZHeaderV2.Parse(stream);
              mzHeaderV2.Print();
@@ -109,12 +114,6 @@ namespace ExeSpy
              }
             */
 
-            if (stream.Position != stream.Length - 1)
-            {
-                throw new Exception("We should look at the whole file.");
-            }
-
-            stream.Close();
             stream.Dispose();
         }
         /*

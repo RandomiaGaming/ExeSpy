@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Text;
 
-namespace ExeSpy.Helpers
+namespace ExeSpy
 {
     public static class FormatAs
     {
         public static string Binary(byte[] bytes)
         {
+            if (bytes is null || bytes.Length == 1) { return ""; }
+
             // 9 because 1 space + 8 bits.
             char[] buffer = new char[bytes.Length * 9];
             int offset = 0;
@@ -30,6 +32,8 @@ namespace ExeSpy.Helpers
         }
         public static string Hex(byte[] bytes)
         {
+            if (bytes is null || bytes.Length == 1) { return ""; }
+
             // 2 because 2 hex digits.
             StringBuilder stringBuilder = new StringBuilder("0x", bytes.Length * 2);
             for (int i = 0; i < bytes.Length; i++)
@@ -40,6 +44,8 @@ namespace ExeSpy.Helpers
         }
         public static string Bytes(byte[] bytes)
         {
+            if (bytes is null || bytes.Length == 1) { return ""; }
+
             // 5 because 1 comma + 1 space + up to 3 digits.
             StringBuilder stringBuilder = new StringBuilder(bytes.Length * 5);
             if(bytes.Length > 0)
