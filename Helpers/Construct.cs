@@ -1,105 +1,234 @@
-﻿using System;
-using System.Text;
-
+﻿using System.IO;
+using System;
 namespace ExeSpy
 {
+    // Parses byte arrays into C# managed types.
     public static class Construct
     {
-        public static byte Byte(byte[] buffer)
+        public static byte Byte(byte[] bytes, int index = 0)
         {
-            if (buffer is null || buffer.Length != 1) { throw new Exception("Bad buffer."); }
+            if (bytes is null) { throw new Exception("Bad bytes."); }
+            if (index < 0 || index >= bytes.Length) { throw new Exception("Bad index."); }
+            if (index + 1 > bytes.Length) { throw new Exception("Too small."); }
 
-            return buffer[0];
+            return bytes[0];
         }
-        public static sbyte SByte(byte[] buffer)
+        public static sbyte SByte(byte[] bytes, int index = 0)
         {
-            if (buffer is null || buffer.Length != 1) { throw new Exception("Bad buffer."); }
+            if (bytes is null) { throw new Exception("Bad bytes."); }
+            if (index < 0 || index >= bytes.Length) { throw new Exception("Bad index."); }
+            if (index + 1 > bytes.Length) { throw new Exception("Too small."); }
 
-            return (sbyte)buffer[0];
+            return (sbyte)bytes[0];
         }
-        public static ushort Word(byte[] buffer)
+        public static ushort Word(byte[] bytes, int index = 0)
         {
-            if (buffer is null || buffer.Length != 2) { throw new Exception("Bad buffer."); }
+            if (bytes is null) { throw new Exception("Bad bytes."); }
+            if (index < 0 || index >= bytes.Length) { throw new Exception("Bad index."); }
+            if (index + 2 > bytes.Length) { throw new Exception("Too small."); }
 
-            return BitConverter.ToUInt16(buffer, 0);
+            return BitConverter.ToUInt16(bytes, index);
         }
-        public static short SWord(byte[] buffer)
+        public static short SWord(byte[] bytes, int index = 0)
         {
-            if (buffer is null || buffer.Length != 2) { throw new Exception("Bad buffer."); }
+            if (bytes is null) { throw new Exception("Bad bytes."); }
+            if (index < 0 || index >= bytes.Length) { throw new Exception("Bad index."); }
+            if (index + 2 > bytes.Length) { throw new Exception("Too small."); }
 
-            return BitConverter.ToInt16(buffer, 0);
+            return BitConverter.ToInt16(bytes, index);
         }
-        public static uint DWord(byte[] buffer)
+        public static uint DWord(byte[] bytes, int index = 0)
         {
-            if (buffer is null || buffer.Length != 4) { throw new Exception("Bad buffer."); }
+            if (bytes is null) { throw new Exception("Bad bytes."); }
+            if (index < 0 || index >= bytes.Length) { throw new Exception("Bad index."); }
+            if (index + 4 > bytes.Length) { throw new Exception("Too small."); }
 
-            return BitConverter.ToUInt32(buffer, 0);
+            return BitConverter.ToUInt32(bytes, index);
         }
-        public static int SDWord(byte[] buffer)
+        public static int SDWord(byte[] bytes, int index = 0)
         {
-            if (buffer is null || buffer.Length != 4) { throw new Exception("Bad buffer."); }
+            if (bytes is null) { throw new Exception("Bad bytes."); }
+            if (index < 0 || index >= bytes.Length) { throw new Exception("Bad index."); }
+            if (index + 4 > bytes.Length) { throw new Exception("Too small."); }
 
-            return BitConverter.ToInt32(buffer, 0);
+            return BitConverter.ToInt32(bytes, index);
         }
-        public static ulong QWord(byte[] buffer)
+        public static ulong QWord(byte[] bytes, int index = 0)
         {
-            if (buffer is null || buffer.Length != 8) { throw new Exception("Bad buffer."); }
+            if (bytes is null) { throw new Exception("Bad bytes."); }
+            if (index < 0 || index >= bytes.Length) { throw new Exception("Bad index."); }
+            if (index + 8 > bytes.Length) { throw new Exception("Too small."); }
 
-            return BitConverter.ToUInt64(buffer, 0);
+            return BitConverter.ToUInt64(bytes, index);
         }
-        public static long SQWord(byte[] buffer)
+        public static long SQWord(byte[] bytes, int index = 0)
         {
-            if (buffer is null || buffer.Length != 8) { throw new Exception("Bad buffer."); }
+            if (bytes is null) { throw new Exception("Bad bytes."); }
+            if (index < 0 || index >= bytes.Length) { throw new Exception("Bad index."); }
+            if (index + 8 > bytes.Length) { throw new Exception("Too small."); }
 
-            return BitConverter.ToInt64(buffer, 0);
+            return BitConverter.ToInt64(bytes, index);
         }
-        public static float Real4(byte[] buffer)
+        public static float Real4(byte[] bytes, int index = 0)
         {
-            if (buffer is null || buffer.Length != 4) { throw new Exception("Bad buffer."); }
+            if (bytes is null) { throw new Exception("Bad bytes."); }
+            if (index < 0 || index >= bytes.Length) { throw new Exception("Bad index."); }
+            if (index + 4 > bytes.Length) { throw new Exception("Too small."); }
 
-            return BitConverter.ToSingle(buffer, 0);
+            return BitConverter.ToSingle(bytes, index);
         }
-        public static double Real8(byte[] buffer)
+        public static double Real8(byte[] bytes, int index = 0)
         {
-            if (buffer is null || buffer.Length != 8) { throw new Exception("Bad buffer."); }
+            if (bytes is null) { throw new Exception("Bad bytes."); }
+            if (index < 0 || index >= bytes.Length) { throw new Exception("Bad index."); }
+            if (index + 8 > bytes.Length) { throw new Exception("Too small."); }
 
-            return BitConverter.ToDouble(buffer, 0);
+            return BitConverter.ToDouble(bytes, index);
         }
-        public static string ASCII(byte[] buffer)
-        {
-            if (buffer is null) { throw new Exception("Bad buffer."); }
 
-            return Encoding.ASCII.GetString(buffer);
+        public static sbyte[] SBytes(byte[] bytes, int count, int index = 0)
+        {
+            if (bytes is null) { throw new Exception("Bad bytes."); }
+            if (count < 0) { throw new Exception("Bad count."); }
+            if (index < 0 || index >= bytes.Length) { throw new Exception("Bad index."); }
+            if (index + (1 * count) > bytes.Length) { throw new Exception("Too small."); }
+
+            MemoryStream stream = new MemoryStream(bytes);
+            sbyte[] output = new sbyte[count];
+            for (int i = 0; i < count; i++)
+            {
+                output[i] = Read.SByte(stream);
+            }
+            stream.Dispose();
+            return output;
         }
-        public static string UTF8(byte[] buffer)
+        public static ushort[] Words(byte[] bytes, int count, int index = 0)
         {
-            if (buffer is null) { throw new Exception("Bad buffer."); }
+            if (bytes is null) { throw new Exception("Bad bytes."); }
+            if (count < 0) { throw new Exception("Bad count."); }
+            if (index < 0 || index >= bytes.Length) { throw new Exception("Bad index."); }
+            if (index + (2 * count) > bytes.Length) { throw new Exception("Too small."); }
 
-            return Encoding.UTF8.GetString(buffer);
+            MemoryStream stream = new MemoryStream(bytes);
+            ushort[] output = new ushort[count];
+            for (int i = 0; i < count; i++)
+            {
+                output[i] = Read.Word(stream);
+            }
+            stream.Dispose();
+            return output;
         }
-        public static string UTF16(byte[] buffer)
+        public static short[] SWords(byte[] bytes, int count, int index = 0)
         {
-            if (buffer is null || buffer.Length % 2 != 0) { throw new Exception("Bad buffer."); }
+            if (bytes is null) { throw new Exception("Bad bytes."); }
+            if (count < 0) { throw new Exception("Bad count."); }
+            if (index < 0 || index >= bytes.Length) { throw new Exception("Bad index."); }
+            if (index + (2 * count) > bytes.Length) { throw new Exception("Too small."); }
 
-            return Encoding.Unicode.GetString(buffer);
+            MemoryStream stream = new MemoryStream(bytes);
+            short[] output = new short[count];
+            for (int i = 0; i < count; i++)
+            {
+                output[i] = Read.SWord(stream);
+            }
+            stream.Dispose();
+            return output;
         }
-        public static string UTF32(byte[] buffer)
+        public static uint[] DWords(byte[] bytes, int count, int index = 0)
         {
-            if (buffer is null || buffer.Length % 4 != 0) { throw new Exception("Bad buffer."); }
+            if (bytes is null) { throw new Exception("Bad bytes."); }
+            if (count < 0) { throw new Exception("Bad count."); }
+            if (index < 0 || index >= bytes.Length) { throw new Exception("Bad index."); }
+            if (index + (4 * count) > bytes.Length) { throw new Exception("Too small."); }
 
-            return Encoding.UTF32.GetString(buffer);
+            MemoryStream stream = new MemoryStream(bytes);
+            uint[] output = new uint[count];
+            for (int i = 0; i < count; i++)
+            {
+                output[i] = Read.DWord(stream);
+            }
+            stream.Dispose();
+            return output;
         }
-        public static DateTime Epoch32(byte[] buffer)
+        public static int[] SDWords(byte[] bytes, int count, int index = 0)
         {
-            if (buffer is null || buffer.Length != 4) { throw new Exception("Bad buffer."); }
+            if (bytes is null) { throw new Exception("Bad bytes."); }
+            if (count < 0) { throw new Exception("Bad count."); }
+            if (index < 0 || index >= bytes.Length) { throw new Exception("Bad index."); }
+            if (index + (4 * count) > bytes.Length) { throw new Exception("Too small."); }
 
-            return new DateTime((10000000l * SDWord(buffer)) + DateTime.Parse("12:00am 01/01/1970 UTC").Ticks);
+            MemoryStream stream = new MemoryStream(bytes);
+            int[] output = new int[count];
+            for (int i = 0; i < count; i++)
+            {
+                output[i] = Read.SDWord(stream);
+            }
+            stream.Dispose();
+            return output;
         }
-        public static DateTime Epoch64(byte[] buffer)
+        public static ulong[] QWords(byte[] bytes, int count, int index = 0)
         {
-            if (buffer is null || buffer.Length != 8) { throw new Exception("Bad buffer."); }
+            if (bytes is null) { throw new Exception("Bad bytes."); }
+            if (count < 0) { throw new Exception("Bad count."); }
+            if (index < 0 || index >= bytes.Length) { throw new Exception("Bad index."); }
+            if (index + (8 * count) > bytes.Length) { throw new Exception("Too small."); }
 
-            return new DateTime((10000000l * SQWord(buffer)) + DateTime.Parse("12:00am 01/01/1970 UTC").Ticks);
+            MemoryStream stream = new MemoryStream(bytes);
+            ulong[] output = new ulong[count];
+            for (int i = 0; i < count; i++)
+            {
+                output[i] = Read.QWord(stream);
+            }
+            stream.Dispose();
+            return output;
+        }
+        public static long[] SQWords(byte[] bytes, int count, int index = 0)
+        {
+            if (bytes is null) { throw new Exception("Bad bytes."); }
+            if (count < 0) { throw new Exception("Bad count."); }
+            if (index < 0 || index >= bytes.Length) { throw new Exception("Bad index."); }
+            if (index + (8 * count) > bytes.Length) { throw new Exception("Too small."); }
+
+            MemoryStream stream = new MemoryStream(bytes);
+            long[] output = new long[count];
+            for (int i = 0; i < count; i++)
+            {
+                output[i] = Read.SQWord(stream);
+            }
+            stream.Dispose();
+            return output;
+        }
+        public static float[] Real4s(byte[] bytes, int count, int index = 0)
+        {
+            if (bytes is null) { throw new Exception("Bad bytes."); }
+            if (count < 0) { throw new Exception("Bad count."); }
+            if (index < 0 || index >= bytes.Length) { throw new Exception("Bad index."); }
+            if (index + (4 * count) > bytes.Length) { throw new Exception("Too small."); }
+
+            MemoryStream stream = new MemoryStream(bytes);
+            float[] output = new float[count];
+            for (int i = 0; i < count; i++)
+            {
+                output[i] = Read.Real4(stream);
+            }
+            stream.Dispose();
+            return output;
+        }
+        public static double[] Real8s(byte[] bytes, int count, int index = 0)
+        {
+            if (bytes is null) { throw new Exception("Bad bytes."); }
+            if (count < 0) { throw new Exception("Bad count."); }
+            if (index < 0 || index >= bytes.Length) { throw new Exception("Bad index."); }
+            if (index + (8 * count) > bytes.Length) { throw new Exception("Too small."); }
+
+            MemoryStream stream = new MemoryStream(bytes);
+            double[] output = new double[count];
+            for (int i = 0; i < count; i++)
+            {
+                output[i] = Read.Real8(stream);
+            }
+            stream.Dispose();
+            return output;
         }
     }
 }

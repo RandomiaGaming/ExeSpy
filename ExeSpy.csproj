@@ -48,12 +48,16 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Headers\MZHeaderV2.cs" />
+    <Compile Include="Headers\PEDataDirectory.cs" />
+    <Compile Include="Headers\PEHeader.cs" />
+    <Compile Include="Headers\PEOptionalHeader.cs" />
+    <Compile Include="Headers\PESectionHeader.cs" />
     <Compile Include="Helpers\Construct.cs" />
     <Compile Include="Helpers\Destruct.cs" />
     <Compile Include="Helpers\FormatAs.cs" />
     <Compile Include="Helpers\Print.cs" />
     <Compile Include="Helpers\Read.cs" />
-    <Compile Include="Helpers\ValidateSizeOf.cs" />
+    <Compile Include="Tests.cs" />
     <Compile Include="Helpers\Write.cs" />
     <Compile Include="Headers\MZHeaderV1.cs" />
     <Compile Include="Program.cs" />

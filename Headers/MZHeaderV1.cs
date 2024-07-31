@@ -6,12 +6,12 @@
     // This version of MZHeader is used by classic MS DOS applications however apps using the WinNE or WinPE formats have an extended version of the MZHeader (MZHeaderV2). A spec compliant MZ loader should read the MZHeaderV1 first then only load the larger MZHeaderV2 if HeaderSize contains enough bytes for the larger structure. 
     public sealed class MZHeaderV1
     {
-        // WORD * 14
+        // (WORD * 14)
         public const int Size = 28;
 
         // WORD e_magic; // Magic number
         // 0x5A4D (ASCII for 'M' and 'Z')
-        public string MagicString = "MZ";
+        public ushort Magic = 0x5A4D;
         // WORD e_cblp; // Bytes on last page of file
         // Number of bytes in the last page.
         public ushort LastPageLength = 0;
@@ -54,7 +54,7 @@
     }
 }
 /* Field Names:
-MagicString
+Magic
 LastPageLength
 PageCount
 RelocationEntiryCount
@@ -68,4 +68,8 @@ InitialIP
 InitialCS
 RelocationTableFileAddress
 Overlay
+*/
+/* Documentation:
+winnt.h
+https://wiki.osdev.org/MZ
 */

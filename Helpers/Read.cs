@@ -1,250 +1,156 @@
 ﻿using System;
 using System.IO;
-
 namespace ExeSpy
 {
+    // Reads C++ primative types and structures from streams.
     public static class Read
     {
+        public static byte[] Bytes(Stream stream, int count)
+        {
+            if (stream is null || !stream.CanRead) { throw new Exception("Bad stream."); }
+            if (count < 0) { throw new Exception("Bad count."); }
+
+            byte[] output = new byte[count];
+            int readBytes = stream.Read(output, 0, count);
+            if (readBytes != count)
+            {
+                throw new Exception("Stream was too small.");
+            }
+            return output;
+        }
+
         public static byte Byte(Stream stream)
         {
-            if (stream is null || !stream.CanRead || stream.Position + 1 > stream.Length) { throw new Exception("Bad stream."); }
+            if (stream is null || !stream.CanRead) { throw new Exception("Bad stream."); }
 
             return Construct.Byte(Bytes(stream, 1));
         }
         public static sbyte SByte(Stream stream)
         {
-            if (stream is null || !stream.CanRead || stream.Position + 1 > stream.Length) { throw new Exception("Bad stream."); }
+            if (stream is null || !stream.CanRead) { throw new Exception("Bad stream."); }
 
             return Construct.SByte(Bytes(stream, 1));
         }
         public static ushort Word(Stream stream)
         {
-            if (stream is null || !stream.CanRead || stream.Position + 2 > stream.Length) { throw new Exception("Bad stream."); }
+            if (stream is null || !stream.CanRead) { throw new Exception("Bad stream."); }
 
             return Construct.Word(Bytes(stream, 2));
         }
         public static short SWord(Stream stream)
         {
-            if (stream is null || !stream.CanRead || stream.Position + 2 > stream.Length) { throw new Exception("Bad stream."); }
+            if (stream is null || !stream.CanRead) { throw new Exception("Bad stream."); }
 
             return Construct.SWord(Bytes(stream, 2));
         }
         public static uint DWord(Stream stream)
         {
-            if (stream is null || !stream.CanRead || stream.Position + 4 > stream.Length) { throw new Exception("Bad stream."); }
+            if (stream is null || !stream.CanRead) { throw new Exception("Bad stream."); }
 
             return Construct.DWord(Bytes(stream, 4));
         }
         public static int SDWord(Stream stream)
         {
-            if (stream is null || !stream.CanRead || stream.Position + 4 > stream.Length) { throw new Exception("Bad stream."); }
+            if (stream is null || !stream.CanRead) { throw new Exception("Bad stream."); }
 
             return Construct.SDWord(Bytes(stream, 4));
         }
         public static ulong QWord(Stream stream)
         {
-            if (stream is null || !stream.CanRead || stream.Position + 8 > stream.Length) { throw new Exception("Bad stream."); }
+            if (stream is null || !stream.CanRead) { throw new Exception("Bad stream."); }
 
             return Construct.QWord(Bytes(stream, 8));
         }
         public static long SQWord(Stream stream)
         {
-            if (stream is null || !stream.CanRead || stream.Position + 8 > stream.Length) { throw new Exception("Bad stream."); }
+            if (stream is null || !stream.CanRead) { throw new Exception("Bad stream."); }
 
             return Construct.SQWord(Bytes(stream, 8));
         }
         public static float Real4(Stream stream)
         {
-            if (stream is null || !stream.CanRead || stream.Position + 4 > stream.Length) { throw new Exception("Bad stream."); }
+            if (stream is null || !stream.CanRead) { throw new Exception("Bad stream."); }
 
             return Construct.Real4(Bytes(stream, 4));
         }
         public static double Real8(Stream stream)
         {
-            if (stream is null || !stream.CanRead || stream.Position + 8 > stream.Length) { throw new Exception("Bad stream."); }
+            if (stream is null || !stream.CanRead) { throw new Exception("Bad stream."); }
 
             return Construct.Real8(Bytes(stream, 8));
         }
-        public static DateTime Epoch32(Stream stream)
-        {
-            if (stream is null || !stream.CanRead || stream.Position + 4 > stream.Length) { throw new Exception("Bad stream."); }
 
-            return Construct.Epoch32(Bytes(stream, 4));
-        }
-        public static DateTime Epoch64(Stream stream)
-        {
-            if (stream is null || !stream.CanRead || stream.Position + 8 > stream.Length) { throw new Exception("Bad stream."); }
-
-            return Construct.Epoch32(Bytes(stream, 8));
-        }
-
-        public static byte[] Bytes(Stream stream, int count)
-        {
-            if (stream is null || !stream.CanRead || stream.Position + (1 * count) > stream.Length) { throw new Exception("Bad stream."); }
-            if (count < 0) { throw new Exception("Bad count."); }
-
-            byte[] output = new byte[count];
-            stream.Read(output, 0, count);
-            return output;
-        }
         public static sbyte[] SBytes(Stream stream, int count)
         {
-            if (stream is null || !stream.CanRead || stream.Position + (1 * count) > stream.Length) { throw new Exception("Bad stream."); }
+            if (stream is null || !stream.CanRead) { throw new Exception("Bad stream."); }
+            if (count < 0) { throw new Exception("Bad count."); }
 
-            sbyte[] output = new sbyte[count];
-            for (int i = 0; i < count; i++)
-            {
-                output[i] = SByte(stream);
-            }
-            return output;
+            return Construct.SBytes(Bytes(stream, 1 * count), count);
         }
         public static ushort[] Words(Stream stream, int count)
         {
-            if (stream is null || !stream.CanRead || stream.Position + (2 * count) > stream.Length) { throw new Exception("Bad stream."); }
+            if (stream is null || !stream.CanRead) { throw new Exception("Bad stream."); }
+            if (count < 0) { throw new Exception("Bad count."); }
 
-            ushort[] output = new ushort[count];
-            for (int i = 0; i < count; i++)
-            {
-                output[i] = Word(stream);
-            }
-            return output;
+            return Construct.Words(Bytes(stream, 2 * count), count);
         }
         public static short[] SWords(Stream stream, int count)
         {
-            if (stream is null || !stream.CanRead || stream.Position + (2 * count) > stream.Length) { throw new Exception("Bad stream."); }
+            if (stream is null || !stream.CanRead) { throw new Exception("Bad stream."); }
+            if (count < 0) { throw new Exception("Bad count."); }
 
-            short[] output = new short[count];
-            for (int i = 0; i < count; i++)
-            {
-                output[i] = SWord(stream);
-            }
-            return output;
+            return Construct.SWords(Bytes(stream, 2 * count), count);
         }
         public static uint[] DWords(Stream stream, int count)
         {
-            if (stream is null || !stream.CanRead || stream.Position + (4 * count) > stream.Length) { throw new Exception("Bad stream."); }
+            if (stream is null || !stream.CanRead) { throw new Exception("Bad stream."); }
+            if (count < 0) { throw new Exception("Bad count."); }
 
-            uint[] output = new uint[count];
-            for (int i = 0; i < count; i++)
-            {
-                output[i] = DWord(stream);
-            }
-            return output;
+            return Construct.DWords(Bytes(stream, 4 * count), count);
         }
         public static int[] SDWords(Stream stream, int count)
         {
-            if (stream is null || !stream.CanRead || stream.Position + (4 * count) > stream.Length) { throw new Exception("Bad stream."); }
+            if (stream is null || !stream.CanRead) { throw new Exception("Bad stream."); }
+            if (count < 0) { throw new Exception("Bad count."); }
 
-            int[] output = new int[count];
-            for (int i = 0; i < count; i++)
-            {
-                output[i] = SDWord(stream);
-            }
-            return output;
+            return Construct.SDWords(Bytes(stream, 4 * count), count);
         }
         public static ulong[] QWords(Stream stream, int count)
         {
-            if (stream is null || !stream.CanRead || stream.Position + (8 * count) > stream.Length) { throw new Exception("Bad stream."); }
+            if (stream is null || !stream.CanRead) { throw new Exception("Bad stream."); }
+            if (count < 0) { throw new Exception("Bad count."); }
 
-            ulong[] output = new ulong[count];
-            for (int i = 0; i < count; i++)
-            {
-                output[i] = QWord(stream);
-            }
-            return output;
+            return Construct.QWords(Bytes(stream, 8 * count), count);
         }
         public static long[] SQWords(Stream stream, int count)
         {
-            if (stream is null || !stream.CanRead || stream.Position + (8 * count) > stream.Length) { throw new Exception("Bad stream."); }
+            if (stream is null || !stream.CanRead) { throw new Exception("Bad stream."); }
+            if (count < 0) { throw new Exception("Bad count."); }
 
-            long[] output = new long[count];
-            for (int i = 0; i < count; i++)
-            {
-                output[i] = SQWord(stream);
-            }
-            return output;
+            return Construct.SQWords(Bytes(stream, 8 * count), count);
         }
         public static float[] Real4s(Stream stream, int count)
         {
-            if (stream is null || !stream.CanRead || stream.Position + (4 * count) > stream.Length) { throw new Exception("Bad stream."); }
+            if (stream is null || !stream.CanRead) { throw new Exception("Bad stream."); }
+            if (count < 0) { throw new Exception("Bad count."); }
 
-            float[] output = new float[count];
-            for (int i = 0; i < count; i++)
-            {
-                output[i] = Real4(stream);
-            }
-            return output;
+            return Construct.Real4s(Bytes(stream, 4 * count), count);
         }
         public static double[] Real8s(Stream stream, int count)
         {
-            if (stream is null || !stream.CanRead || stream.Position + (8 * count) > stream.Length) { throw new Exception("Bad stream."); }
-
-            double[] output = new double[count];
-            for (int i = 0; i < count; i++)
-            {
-                output[i] = Real8(stream);
-            }
-            return output;
-        }
-        public static DateTime[] Epoch32s(Stream stream, int count)
-        {
-            if (stream is null || !stream.CanRead || stream.Position + (4 * count) > stream.Length) { throw new Exception("Bad stream."); }
-
-            DateTime[] output = new DateTime[count];
-            for (int i = 0; i < count; i++)
-            {
-                output[i] = Epoch32(stream);
-            }
-            return output;
-        }
-        public static DateTime[] Epoch64s(Stream stream, int count)
-        {
-            if (stream is null || !stream.CanRead || stream.Position + (8 * count) > stream.Length) { throw new Exception("Bad stream."); }
-
-            DateTime[] output = new DateTime[count];
-            for (int i = 0; i < count; i++)
-            {
-                output[i] = Epoch64(stream);
-            }
-            return output;
-        }
-
-        public static string ASCII(Stream stream, int count)
-        {
-            if (stream is null || !stream.CanRead || stream.Position + (1 * count) > stream.Length) { throw new Exception("Bad stream."); }
+            if (stream is null || !stream.CanRead) { throw new Exception("Bad stream."); }
             if (count < 0) { throw new Exception("Bad count."); }
 
-            return Construct.ASCII(Bytes(stream, count));
-        }
-        public static string UTF8(Stream stream, int count)
-        {
-            if (stream is null || !stream.CanRead || stream.Position + (1 * count) > stream.Length) { throw new Exception("Bad stream."); }
-            if (count < 0) { throw new Exception("Bad count."); }
-
-            return Construct.UTF8(Bytes(stream, count));
-        }
-        public static string UTF16(Stream stream, int count)
-        {
-            if (stream is null || !stream.CanRead || stream.Position + (2 * count) > stream.Length) { throw new Exception("Bad stream."); }
-            if (count < 0) { throw new Exception("Bad count."); }
-
-            return Construct.UTF16(Bytes(stream, count));
-        }
-        public static string UTF32(Stream stream, int count)
-        {
-            if (stream is null || !stream.CanRead || stream.Position + (4 * count) > stream.Length) { throw new Exception("Bad stream."); }
-            if (count < 0) { throw new Exception("Bad count."); }
-
-            return Construct.UTF32(Bytes(stream, count));
+            return Construct.Real8s(Bytes(stream, 8 * count), count);
         }
 
         public static MZHeaderV1 MZHeaderV1(Stream stream)
         {
-            if (stream is null || !stream.CanRead || stream.Position + ExeSpy.MZHeaderV1.Size > stream.Length) { throw new Exception("Bad stream."); }
+            if (stream is null || !stream.CanRead) { throw new Exception("Bad stream."); }
 
             MZHeaderV1 output = new MZHeaderV1();
 
-            output.MagicString = ASCII(stream, 2);
+            output.Magic = Word(stream);
             output.LastPageLength = Word(stream);
             output.PageCount = Word(stream);
             output.RelocationEntiryCount = Word(stream);
@@ -263,11 +169,11 @@ namespace ExeSpy
         }
         public static MZHeaderV2 MZHeaderV2(Stream stream)
         {
-            if (stream is null || !stream.CanRead || stream.Position + ExeSpy.MZHeaderV2.Size > stream.Length) { throw new Exception("Bad stream."); }
+            if (stream is null || !stream.CanRead) { throw new Exception("Bad stream."); }
 
             MZHeaderV2 output = new MZHeaderV2();
 
-            output.MagicString = ASCII(stream, 2);
+            output.Magic = Word(stream);
             output.LastPageLength = Word(stream);
             output.PageCount = Word(stream);
             output.RelocationEntiryCount = Word(stream);
@@ -285,9 +191,110 @@ namespace ExeSpy
             output.OEMIdentifier = Word(stream);
             output.OEMInfo = Word(stream);
             output.Reserved2 = Words(stream, 10);
-            output.NewHeaderFileAddress = SQWord(stream);
+            output.NewHeaderFileAddress = DWord(stream);
 
             return output;
+        }
+        public static PEHeader PEHeader(Stream stream)
+        {
+            if (stream is null || !stream.CanRead) { throw new Exception("Bad stream."); }
+
+            PEHeader output = new PEHeader();
+
+            output.Magic = DWord(stream);
+            output.Machine = Word(stream);
+            output.NumberOfSections = Word(stream);
+            output.DateTimeStamp = DWord(stream);
+            output.PointerToSymbolTable = DWord(stream);
+            output.NumberOfSymbols = DWord(stream);
+            output.SizeOfOptionalHeader = Word(stream);
+            output.Characteristics = Word(stream);
+
+            return output;
+        }
+        public static PEOptionalHeader PEOptionalHeader(Stream stream)
+        {
+            if (stream is null || !stream.CanRead) { throw new Exception("Bad stream."); }
+
+            PEOptionalHeader output = new PEOptionalHeader();
+
+            output.Magic = Word(stream);
+            output.MajorLinkerVersion = Byte(stream);
+            output.MinorLinkerVersion = Byte(stream);
+            output.SizeOfCode = DWord(stream);
+            output.SizeOfInitializedData = DWord(stream);
+            output.SizeOfUninitializedData = DWord(stream);
+            output.AddressOfEntryPoint = DWord(stream);
+            output.BaseOfCode = DWord(stream);
+            output.BaseOfData = DWord(stream);
+            output.ImageBase = DWord(stream);
+            output.SectionAlignment = DWord(stream);
+            output.FileAlignment = DWord(stream);
+            output.MajorOperatingSystemVersion = Word(stream);
+            output.MinorOperatingSystemVersion = Word(stream);
+            output.MajorImageVersion = Word(stream);
+            output.MinorImageVersion = Word(stream);
+            output.MajorSubsystemVersion = Word(stream);
+            output.MinorSubsystemVersion = Word(stream);
+            output.Win32VersionValue = DWord(stream);
+            output.SizeOfImage = DWord(stream);
+            output.SizeOfHeaders = DWord(stream);
+            output.CheckSum = DWord(stream);
+            output.Subsystem = Word(stream);
+            output.DllCharacteristics = Word(stream);
+            output.SizeOfStackReserve = DWord(stream);
+            output.SizeOfStackCommit = DWord(stream);
+            output.SizeOfHeapReserve = DWord(stream);
+            output.SizeOfHeapCommit = DWord(stream);
+            output.LoaderFlags = DWord(stream);
+            output.NumberOfRvaAndSizes = DWord(stream);
+
+            return output;
+        }
+        public static PEDataDirectory PEDataDirectory(Stream stream)
+        {
+            if (stream is null || !stream.CanRead) { throw new Exception("Bad stream."); }
+
+            PEDataDirectory output = new PEDataDirectory();
+
+            output.VirtualSize = DWord(stream);
+            output.VirtualAddress = DWord(stream);
+
+            return output;
+        }
+        public static PESectionHeader PESectionHeader(Stream stream)
+        {
+            if (stream is null || !stream.CanRead) { throw new Exception("Bad stream."); }
+
+            PESectionHeader output = new PESectionHeader();
+
+            output.Name = QWord(stream);
+            output.VirtualSize = DWord(stream);
+            output.VirtualAddress = DWord(stream);
+            output.SizeOfRawData = DWord(stream);
+            output.PointerToRawData = DWord(stream);
+            output.PointerToRelocations = DWord(stream);
+            output.PointerToLinenumbers = DWord(stream);
+            output.NumberOfRelocations = Word(stream);
+            output.NumberOfLinenumbers = Word(stream);
+            output.Characteristics = DWord(stream);
+
+            return output;
+        }
+        public static byte[] PESection(Stream stream, PESectionHeader header)
+        {
+            if (stream is null || !stream.CanRead) { throw new Exception("Bad stream."); }
+            if (header is null) { throw new Exception("Bad header."); }
+
+            int payloadLength = (int)header.SizeOfRawData;
+            if(payloadLength > header.VirtualSize)
+            {
+                payloadLength = (int)header.VirtualSize;
+            }
+
+            byte[] payload = Bytes(stream, payloadLength);
+
+            return payload;
         }
     }
 }

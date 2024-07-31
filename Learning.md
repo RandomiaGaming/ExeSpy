@@ -34,6 +34,10 @@ COM files are raw 16 bit executables with no header. They are executed by copy/p
 contents of the file into memory then jumping to the address of the start of the file's contents.
 These files are not supported on modern windows but can be run with the DosBox emulator.
 
+How do I know if my MZHeader is version 1 or 2?
+The answer is that you cannot know from the MZHeader alone.
+So just assume it's an MZHeaderV2 and then if NewHeaderFileAddress points to the Magic bytes PE\0\0 or NE then its a valid MZHeaderV2.
+
 # Types
 1 BYTE = 8 BITs
 1 WORD = 2 BYTEs or 16 BITs

@@ -1,17 +1,17 @@
 ﻿namespace ExeSpy
 {
-    // Copied as is from winnt.h
+    // Modified from winnt.h
     // typedef struct _IMAGE_DOS_HEADER { // DOS .EXE header
     // } IMAGE_DOS_HEADER, *PIMAGE_DOS_HEADER;
     // This version of MZHeader is used by classic MS DOS applications however apps using the WinNE or WinPE formats have an extended version of the MZHeader (MZHeaderV2). A spec compliant MZ loader should read the MZHeaderV1 first then only load the larger MZHeaderV2 if HeaderSize contains enough bytes for the larger structure. 
     public sealed class MZHeaderV2
     {
-        // (WORD * 40) + (SQWORD * 1)
-        public const int Size = 28;
+        // (WORD * 30) + (DWORD * 1)
+        public const int Size = 64;
 
         // WORD e_magic; // Magic number
         // 0x5A4D (ASCII for 'M' and 'Z')
-        public string MagicString = "MZ";
+        public ushort Magic = 0x5A4D;
         // WORD e_cblp; // Bytes on last page of file
         // Number of bytes in the last page.
         public ushort LastPageLength = 0;
@@ -66,11 +66,11 @@
         // LONG e_lfanew; // File address of new exe header
         // Starting address of the PE header
         // Technically the above comment is wrong because NewHeaderFileAddress points to the second header for the executable which can either be a NEHeader or a PEHeader.
-        public long NewHeaderFileAddress = 0;
+        public uint NewHeaderFileAddress = 0;
     }
 }
 /* Field Names:
-MagicString
+Magic
 LastPageLength
 PageCount
 RelocationEntiryCount
@@ -89,4 +89,8 @@ OEMIdentifier
 OEMInfo
 Reserved2
 NewHeaderFileAddress
+*/
+/* Documentation:
+winnt.h
+https://wiki.osdev.org/MZ
 */
