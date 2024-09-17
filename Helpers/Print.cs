@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 namespace ExeSpy
 {
     // Prints text and structures to the console.
@@ -22,6 +23,7 @@ namespace ExeSpy
         public static void Line(string message)
         {
             if (message is null) { message = ""; }
+            Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine(message);
         }
         public static void Warning(string warning)
@@ -29,7 +31,12 @@ namespace ExeSpy
             if (warning is null) { warning = ""; }
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine($"Warning: {warning}");
-            Console.ForegroundColor = ConsoleColor.White;
+        }
+        public static void Error(string error)
+        {
+            if (error is null) { error = ""; }
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"ERROR: {error}");
         }
 
         public static void MZHeaderV1(MZHeaderV1 value, long FSPOS)
@@ -178,11 +185,22 @@ namespace ExeSpy
             if (payload is null) { throw new Exception("Bad payload."); }
             if (FSPOS < 0) { throw new Exception("Bad FSPOS"); }
 
-            Line($"PESection ({FSPOS}):");
-            Pair("Name", $"\"{FormatAs.Ascii(Destruct.QWord(header.Name), true)}\"");
-            Pair("SizeOnDisk", $"{header.SizeOfRawData}");
-            Pair("SizeInMemory", $"{header.VirtualSize}");
-            Pair("SizeOfPayload", $"{payload.Length}");
+            string sectionName = FormatAs.Ascii(Destruct.QWord(header.Name), false);
+            string sectionDisplayName = sectionName.Replace("\0", "");
+            Line($"{sectionDisplayName} PESection ({FSPOS}):");
+            if (sectionName == ".text\0\0\0")
+            {
+                MemoryStream payloadStream = new MemoryStream(payload);
+                while(payloadStream.Position != payloadStream.Length)
+                {
+                    Indented(Disassemble.x86(payloadStream));
+                }
+                payloadStream.Dispose();
+            }
+            else if (sectionName == ".rdata\0\0")
+            {
+                Line($"{FormatAs.Ascii(payload, true)}");
+            }
             NewLine();
         }
     }

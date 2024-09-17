@@ -287,7 +287,7 @@ namespace ExeSpy
             if (header is null) { throw new Exception("Bad header."); }
 
             int payloadLength = (int)header.SizeOfRawData;
-            if(payloadLength > header.VirtualSize)
+            if (payloadLength > header.VirtualSize)
             {
                 payloadLength = (int)header.VirtualSize;
             }

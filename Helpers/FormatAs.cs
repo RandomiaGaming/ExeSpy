@@ -1,14 +1,54 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 namespace ExeSpy
 {
     // Formats data as strings in various ways.
     public static class FormatAs
     {
-        private static bool Printable(char c)
+        private static bool IsPrintableUnicode(char c)
         {
-            return char.IsLetterOrDigit(c) || char.IsPunctuation(c) || char.IsSymbol(c) || char.IsWhiteSpace(c);
+            UnicodeCategory category = char.GetUnicodeCategory(c);
+            switch (category)
+            {
+                case UnicodeCategory.UppercaseLetter: return true;
+                case UnicodeCategory.LowercaseLetter: return true;
+                case UnicodeCategory.TitlecaseLetter: return true;
+                case UnicodeCategory.ModifierLetter: return false;
+                case UnicodeCategory.OtherLetter: return false;
+                case UnicodeCategory.NonSpacingMark: return false;
+                case UnicodeCategory.SpacingCombiningMark: return false;
+                case UnicodeCategory.EnclosingMark: return false;
+                case UnicodeCategory.DecimalDigitNumber: return true;
+                case UnicodeCategory.LetterNumber: return true;
+                case UnicodeCategory.OtherNumber: return true;
+                case UnicodeCategory.SpaceSeparator: return true;
+                case UnicodeCategory.LineSeparator: return false;
+                case UnicodeCategory.ParagraphSeparator: return false;
+                case UnicodeCategory.Control: return false;
+                case UnicodeCategory.Format: return false;
+                case UnicodeCategory.Surrogate: return false;
+                case UnicodeCategory.PrivateUse: return false;
+                case UnicodeCategory.ConnectorPunctuation: return false;
+                case UnicodeCategory.DashPunctuation: return true;
+                case UnicodeCategory.OpenPunctuation: return true;
+                case UnicodeCategory.ClosePunctuation: return true;
+                case UnicodeCategory.InitialQuotePunctuation: return true;
+                case UnicodeCategory.FinalQuotePunctuation: return true;
+                case UnicodeCategory.OtherPunctuation: return true;
+                case UnicodeCategory.MathSymbol: return true;
+                case UnicodeCategory.CurrencySymbol: return true;
+                case UnicodeCategory.ModifierSymbol: return false;
+                case UnicodeCategory.OtherSymbol: return false;
+                case UnicodeCategory.OtherNotAssigned : return false;
+                default: return false;
+            }
+        }
+        private static bool IsPrintableAscii(char c)
+        {
+            ushort charInt = (ushort)c;
+            return charInt >= 32 && charInt <= 126;
         }
         private static bool AllZeros(byte[] value)
         {
@@ -58,7 +98,7 @@ namespace ExeSpy
         {
             if (bytes is null || bytes.Length <= 0) { throw new Exception("Bad bytes."); }
 
-            if (AllZeros(bytes))
+            if (abridgeZeros && AllZeros(bytes))
             {
                 return $"0x00 * {bytes.Length}";
             }
@@ -103,10 +143,17 @@ namespace ExeSpy
                 StringBuilder outputStringBuilder = new StringBuilder();
                 for (int i = 0; i < output.Length; i++)
                 {
-                    if (!Printable(output[i]))
+                    if (!IsPrintableAscii(output[i]))
                     {
-                        outputStringBuilder.Append("\\a");
-                        outputStringBuilder.Append(((byte)output[i]).ToString("X2"));
+                        if (output[i] == 0)
+                        {
+                            outputStringBuilder.Append("\\0");
+                        }
+                        else
+                        {
+                            outputStringBuilder.Append("\\a");
+                            outputStringBuilder.Append(((byte)output[i]).ToString("X2"));
+                        }
                     }
                     else if (output[i] == '\\')
                     {
@@ -139,10 +186,17 @@ namespace ExeSpy
                 StringBuilder outputStringBuilder = new StringBuilder();
                 for (int i = 0; i < output.Length; i++)
                 {
-                    if (!Printable(output[i]))
+                    if (!IsPrintableUnicode(output[i]))
                     {
-                        outputStringBuilder.Append("\\u");
-                        outputStringBuilder.Append(((ushort)output[i]).ToString("X2"));
+                        if (output[i] == 0)
+                        {
+                            outputStringBuilder.Append("\\0");
+                        }
+                        else
+                        {
+                            outputStringBuilder.Append("\\u");
+                            outputStringBuilder.Append(((ushort)output[i]).ToString("X2"));
+                        }
                     }
                     else if (output[i] == '\\')
                     {

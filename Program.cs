@@ -2,13 +2,41 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.Remoting.Messaging;
 
 namespace ExeSpy
 {
     public static class Program
     {
+        private static bool AllZeros(byte[] value)
+        {
+            for (int i = 0; i < value.Length; i++)
+            {
+                if (value[i] != 0)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        // Reads bytes until stream.Position == targetFSPOS. If a non-null byte is encountered along the way throws an error.
+        private static void CheckPadding(Stream stream, long targetFSPOS)
+        {
+            if (stream.Position > targetFSPOS)
+            {
+                throw new Exception("stream.Position was too large!");
+            }
+            int paddingSize = (int)(targetFSPOS - stream.Position);
+            byte[] unusedBytes = Read.Bytes(stream, paddingSize);
+            if (!AllZeros(unusedBytes))
+            {
+                throw new Exception("Padding contained non 0 values!");
+            }
+        }
         public static int Main(string[] args)
         {
+
+
             if (Debugger.IsAttached)
             {
                 Print.Line("Running tests...");
@@ -61,14 +89,11 @@ namespace ExeSpy
             // Load MZ header
             FSPOS = stream.Position;
             MZHeaderV2 mzHeader = Read.MZHeaderV2(stream);
+            if (mzHeader.Magic != 0x5A4D) { throw new Exception("mzHeader.Magic was incorrect."); }
             Print.MZHeaderV2(mzHeader, FSPOS);
 
-            // Check for padding after MZ header
-            if (stream.Position != mzHeader.HeaderSize * 16)
-            {
-                Print.Warning("There was unused bytes in the MZ header.");
-                Print.NewLine();
-            }
+            // Check that we are at the end of the MZ header
+            CheckPadding(stream, mzHeader.HeaderSize * 16);
 
             // Load MSDOS relocation table
             if (mzHeader.RelocationEntiryCount > 0)
@@ -104,9 +129,13 @@ namespace ExeSpy
                 Print.NewLine();
             }
 
+            // Check that we are at the start of the PE header
+            CheckPadding(stream, mzHeader.NewHeaderFileAddress);
+
             // Load PE header
             FSPOS = stream.Position;
             PEHeader peHeader = Read.PEHeader(stream);
+            if (peHeader.Magic != 0x00004550) { throw new Exception("peHeader.Magic was incorrect."); }
             Print.PEHeader(peHeader, FSPOS);
 
             // Calculate and save the file position we will be at when we finish reading the optional header.
@@ -117,6 +146,7 @@ namespace ExeSpy
             {
                 FSPOS = stream.Position;
                 PEOptionalHeader peOptionalHeader = Read.PEOptionalHeader(stream);
+                if (peOptionalHeader.Magic != 0x010b && peOptionalHeader.Magic != 0x020b && peOptionalHeader.Magic != 0x0107) { throw new Exception("peOptionalHeader.Magic was incorrect."); }
                 Print.PEOptionalHeader(peOptionalHeader, FSPOS);
 
                 uint DataDirectoryCount = peOptionalHeader.NumberOfRvaAndSizes;
@@ -129,12 +159,8 @@ namespace ExeSpy
                 }
             }
 
-            // Check for padding after PE Optional Header
-            if (stream.Position != sectionHeadersPosition)
-            {
-                Print.Warning("There was unused bytes in the PE optional header.");
-                Print.NewLine();
-            }
+            // Check for unused bytes after PE Optional Header
+            CheckPadding(stream, sectionHeadersPosition);
 
             // Load PE section headers.
             PESectionHeader[] peSectionHeaders = new PESectionHeader[peHeader.NumberOfSections];
@@ -161,25 +187,18 @@ namespace ExeSpy
                 }
                 peSectionsToInspect.Remove(nextSection);
 
-                if(nextSection.PointerToRawData < stream.Position)
-                {
-                    Print.Warning($"PE section \"{FormatAs.Ascii(Destruct.QWord(nextSection.Name), true)}\" overlapped with other data.");
-                    Print.NewLine();
-
-                    stream.Seek(nextSection.PointerToRawData, SeekOrigin.Begin);
-                }
-                if (stream.Position != nextSection.PointerToRawData)
-                {
-                    Print.Warning($"There was unused bytes before PE section \"{FormatAs.Ascii(Destruct.QWord(nextSection.Name), true)}\".");
-                    Print.NewLine();
-
-                    stream.Seek(nextSection.PointerToRawData, SeekOrigin.Begin);
-                }
+                // Check if next section is behind us.
+                if (nextSection.PointerToRawData < stream.Position) { throw new Exception("PESection payloads must be in the order their headers appear."); }
+                // Check for unused bytes after last section.
+                CheckPadding(stream, nextSection.PointerToRawData);
 
                 FSPOS = stream.Position;
                 byte[] sectionPayload = Read.PESection(stream, nextSection);
                 Print.PESection(nextSection, sectionPayload, FSPOS);
             }
+
+            // Check for unused bytes at the end of the file.
+            CheckPadding(stream, stream.Length);
 
             if (stream.Position != stream.Length)
             {
